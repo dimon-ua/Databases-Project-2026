@@ -1,3 +1,4 @@
+from mysql_connection import mydb
 mycursor = mydb.cursor()
 
 sql = """
