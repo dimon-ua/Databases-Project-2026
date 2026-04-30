@@ -41,7 +41,8 @@ def attendees_by_company(company_name):
             JOIN registration ON attendee.attendeeID = registration.attendeeID
             JOIN session      ON registration.sessionID = session.sessionID
             JOIN room         ON session.roomID = room.roomID
-            WHERE company.companyID = %s;
+            WHERE company.companyID = %s
+            order by attendee.attendeeName;
             """
             
     mycursor.execute(sql, (company_name,))
@@ -49,7 +50,7 @@ def attendees_by_company(company_name):
     
     
     for row in results:
-        print(f"{row[0]:<35}  |  {row[1]:<35}  |  {row[2]:<35}  |  {row[3]:<35}  |  {row[4]:<35}")  
+        print(f"{row[0]:<15}  |  {row[1]}  |  {row[2]:<35}  |  {row[3]:<25}  |  {row[4]}  |  {row[5]:<25}")  
     
         
 attendees_by_company(2)
