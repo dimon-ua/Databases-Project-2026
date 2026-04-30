@@ -49,7 +49,7 @@ def attendees_by_company(company_name):
     
     
     for row in results:
-        print(row)
+        print(f"{row[0]:<35}  |  {row[1]:<35}  |  {row[2]:<35}  |  {row[3]:<35}  |  {row[4]:<35}")  
     
         
 attendees_by_company(2)
