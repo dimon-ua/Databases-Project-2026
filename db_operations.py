@@ -23,5 +23,33 @@ def view_speakers_sessions(input_name):
     else:
         for row in results: 
             print(f"{row[0]:<35}  |  {row[1]:<35}  |  {row[2]:<35}")       
+            
+            
+def attendees_by_company(company_name):
+    mycursor = mydb.cursor()
+    
+    sql = """
+            SELECT 
+            attendee.attendeeName, 
+            attendee.attendeeDOB, 
+            session.sessionTitle, 
+            session.speakerName,
+            session.sessionDate,
+            room.roomName
+            FROM company
+            JOIN attendee     ON company.companyID = attendee.attendeeCompanyID
+            JOIN registration ON attendee.attendeeID = registration.attendeeID
+            JOIN session      ON registration.sessionID = session.sessionID
+            JOIN room         ON session.roomID = room.roomID
+            WHERE company.companyID = %s;
+            """
+            
+    mycursor.execute(sql, (company_name,))
+    results = mycursor.fetchall()    
+    
+    
+    for row in results:
+        print(row)
     
         
+attendees_by_company(2)
