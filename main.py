@@ -21,9 +21,11 @@ def main():
         choice = input("Select an option: ")
         if choice == '1':
             print("\n")
-            x = input ("Enter speaker name : ")
+            x = input("Enter speaker name : ")
             print(f"Session Details for : {x}")
-            view_speakers_sessions()
+            view_speakers_sessions(x)
+        if choice == '2':
+            pass
         if choice == 'x':
             break
         else:
