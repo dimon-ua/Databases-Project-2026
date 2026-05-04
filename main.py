@@ -1,5 +1,6 @@
 import mysql_connection
-from db_operations import view_speakers_sessions
+import db_operations 
+
 
 def display_menu():
     print("Conference Management")
@@ -19,13 +20,23 @@ def main():
     while True:
         display_menu()
         choice = input("Select an option: ")
+        
         if choice == '1':
             print("\n")
             x = input("Enter speaker name : ")
             print(f"Session Details for : {x}")
-            view_speakers_sessions(x)
+            db_operations.view_speakers_sessions(x)
+            
         if choice == '2':
-            pass
+            while True:
+                company_id = input("Enter company ID : ")
+                
+                if company_id.isdigit() and int(company_id) > 0:
+                    db_operations.attendees_by_company(company_id)   
+                    break;
+                else:
+                    company_id = input("Enter company ID : ")                 
+                
         if choice == 'x':
             break
         else:

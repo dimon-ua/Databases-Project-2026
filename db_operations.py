@@ -1,6 +1,6 @@
 from mysql_connection import mydb
 
-
+# -------------print("1. View Speakers & Sessions") ------------------------
 def view_speakers_sessions(input_name):
     mycursor = mydb.cursor()
     
@@ -24,7 +24,7 @@ def view_speakers_sessions(input_name):
         for row in results: 
             print(f"{row[0]:<35}  |  {row[1]:<35}  |  {row[2]:<35}")       
             
-            
+# -------------print("2. View Attendees by Company") ------------------------           
 def attendees_by_company(company_name):
     mycursor = mydb.cursor()
     
