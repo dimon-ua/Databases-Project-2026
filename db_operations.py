@@ -25,10 +25,22 @@ def view_speakers_sessions(input_name):
             print(f"{row[0]:<35}  |  {row[1]:<35}  |  {row[2]:<35}")       
             
 # -------------print("2. View Attendees by Company") ------------------------           
-def attendees_by_company(company_name):
+def attendees_by_company(company_id):
     mycursor = mydb.cursor()
     
-    sql = """
+    check_company_id = "SELECT companyName FROM company where companyID = %s"
+    mycursor.execute(check_company_id,(company_id,))
+    company = mycursor.fetchone()
+    
+    #print(company[0])    
+    #print(type(company[0]))
+    
+    
+    if company is None:
+        print(f"Company with ID {company_id} doesn't exist")
+    else:
+        print(f"\n{company[0]} Attendees")
+        sql = """
             SELECT 
             attendee.attendeeName, 
             attendee.attendeeDOB, 
@@ -44,13 +56,14 @@ def attendees_by_company(company_name):
             WHERE company.companyID = %s
             order by attendee.attendeeName;
             """
+                    
+        mycursor.execute(sql, (company_id,))
+        results = mycursor.fetchall()                
+    
+        if not results:
+            print(f"No attendees found for {company[0]}")  
+        else:                        
+            for row in results:
+                print(f"{row[0]:<15}  |  {row[1]}  |  {row[2]:<35}  |  {row[3]:<25}  |  {row[4]}  |  {row[5]:<25}")  
             
-    mycursor.execute(sql, (company_name,))
-    results = mycursor.fetchall()    
     
-    
-    for row in results:
-        print(f"{row[0]:<15}  |  {row[1]}  |  {row[2]:<35}  |  {row[3]:<25}  |  {row[4]}  |  {row[5]:<25}")  
-    
-        
-attendees_by_company(2)
