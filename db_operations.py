@@ -66,4 +66,19 @@ def attendees_by_company(company_id):
             for row in results:
                 print(f"{row[0]:<15}  |  {row[1]}  |  {row[2]:<35}  |  {row[3]:<25}  |  {row[4]}  |  {row[5]:<25}")  
             
+
+# -------------print("3. Add New Attendee") ------------------------    
+def add_new_attendee(attendee_id, name, dob, gender, company_id):
+    mycursor = mydb.cursor()
     
+    sql_insert_new_attendee = """
+        INSERT INTO attendee(attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
+        VALUES (%s, %s, %s, %s, %s)
+    """
+    values = (attendee_id, name, dob, gender, company_id)
+    
+    mycursor.execute(sql_insert_new_attendee, values)
+    mydb.commit()
+    
+    print(f"\n[+] Attendee {name} successfully added.")
+    mycursor.close()

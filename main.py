@@ -36,7 +36,18 @@ def main():
                     break;
                 else:
                     company_id = input("Enter company ID : ")                 
-                
+        
+        if choice == '3':
+            print("Add new Attendee\n")
+            print("------------------")
+            attendee_id = input("Attendee ID : ")
+            attendee_name = input("Name : ")
+            attendee_dob = input("DOB : ")
+            attendee_gender = input("Gender : ")
+            attendee_company_id = input("Company ID : ")
+            
+            db_operations.add_new_attendee(attendee_id, attendee_name, attendee_dob, attendee_gender, attendee_company_id)
+                    
         if choice == 'x':
             break
         else:
