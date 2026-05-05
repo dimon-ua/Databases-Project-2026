@@ -1,4 +1,6 @@
 from mysql_connection import mydb
+import mysql.connector
+import error_conditions
 
 # -------------print("1. View Speakers & Sessions") ------------------------
 def view_speakers_sessions(input_name):
@@ -68,17 +70,32 @@ def attendees_by_company(company_id):
             
 
 # -------------print("3. Add New Attendee") ------------------------    
-def add_new_attendee(attendee_id, name, dob, gender, company_id):
-    mycursor = mydb.cursor()
+def add_new_attendee(attendee_id, name, dob, gender, company_id):        
+    if error_conditions.attendee_exist(attendee_id):
+        print(f"\n[!] *** Error *** Attendee ID: {attendee_id} already exists.")
+        return 
     
-    sql_insert_new_attendee = """
-        INSERT INTO attendee(attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
-        VALUES (%s, %s, %s, %s, %s)
-    """
-    values = (attendee_id, name, dob, gender, company_id)
+    if not error_conditions.company_exist(company_id):
+        print(f"\n[!] *** Error *** Company ID: {company_id} does not exist")
+        return
     
-    mycursor.execute(sql_insert_new_attendee, values)
-    mydb.commit()
+    if not error_conditions.gender_exist(gender):
+        print(f"\n[!] *** Error *** Gender must beMale/Female.")
     
-    print(f"\n[+] Attendee {name} successfully added.")
-    mycursor.close()
+    
+    try:    
+        mycursor = mydb.cursor()
+        
+        sql_insert_new_attendee = """
+            INSERT INTO attendee(attendeeID, attendeeName, attendeeDOB, attendeeGender, attendeeCompanyID)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        values = (attendee_id, name, dob, gender, company_id)
+            
+        mycursor.execute(sql_insert_new_attendee, values)
+        mydb.commit()
+        
+        print(f"\n[+] Attendee {name} successfully added.")
+        mycursor.close()
+    except mysql.connector.Error as err:
+        print(f"*** ERROR *** {err}")
