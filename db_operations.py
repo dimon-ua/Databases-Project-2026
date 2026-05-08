@@ -1,6 +1,7 @@
 from mysql_connection import mydb
 import mysql.connector
 import error_conditions
+from neo4j import get_session
 
 # -------------print("1. View Speakers & Sessions") ------------------------
 def view_speakers_sessions(input_name):
@@ -99,3 +100,38 @@ def add_new_attendee(attendee_id, name, dob, gender, company_id):
         mycursor.close()
     except mysql.connector.Error as err:
         print(f"*** ERROR *** {err}")
+        
+# -------------print("4. View Connected Attendees") ------------------------  
+
+def view_connected_attendees(attendee_id):
+    cursor = mydb.cursor()
+    cursor.execute("SELECT attendeeName FROM attendee WHERE attendeeID = %s", (attendee_id,))
+    result = cursor.fetchone()
+    
+    if result is None:
+        print(f"*** ERROR *** Attendee does not exist")
+        cursor.close()
+        return
+    
+    #print(result)
+    attendee_name = result[0]
+    print(f"Attendee Name:  {attendee_name}")
+    print("-" * 30)
+    
+    with get_session() as neo_session:
+        query = """
+        MATCH (a1:Attendee {attendeeID: $id})-[:CONNECTED_TO]-(a2:Attendee)
+        RETURN a2.attendeeID AS id, a2.attendeeName AS name
+        """
+        
+        results = neo_session.run(query, id=int(attendee_id))
+        connections = list(results)
+
+        if not connections:
+            print("No connections")
+        else:
+            print("These attendees are connected:")
+            for record in connections:
+                print(f"{record['id']}  |  {record['name']}")
+    
+    cursor.close()

@@ -48,6 +48,14 @@ def main():
             
             db_operations.add_new_attendee(attendee_id, attendee_name, attendee_dob, attendee_gender, attendee_company_id)
                     
+        if choice == '4':
+            attendee_id = input("Enter Attendee ID : ")
+            
+            if not attendee_id.isdigit():
+                print("*** ERROR *** Invalid attendee ID")
+            else:
+                db_operations.view_connected_attendees(attendee_id)
+                
         if choice == 'x':
             break
         else:
