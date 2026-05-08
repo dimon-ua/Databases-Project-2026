@@ -1,7 +1,7 @@
 from mysql_connection import mydb
 import mysql.connector
 import error_conditions
-from neo4j import get_session
+from config_neo4j import get_session
 
 # -------------print("1. View Speakers & Sessions") ------------------------
 def view_speakers_sessions(input_name):
