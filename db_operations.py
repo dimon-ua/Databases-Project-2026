@@ -135,3 +135,18 @@ def view_connected_attendees(attendee_id):
                 print(f"{record['id']}  |  {record['name']}")
     
     cursor.close()
+    
+
+# -------------print("5. Add Attendee Connection") ------------------------
+def add_attendee_connection(id1, id2):
+    cursor = mydb.cursor()
+    cursor.execute("SELECT attendeeID FROM attendee WHERE attendeeID IN (%s, %s)", (id1, id2))
+    found = cursor.fetchall()
+    
+    if len(found) < 2:
+        print("*** ERROR *** One or both attendee IDs do not exist")
+        return
+    
+    #print()
+    
+   
