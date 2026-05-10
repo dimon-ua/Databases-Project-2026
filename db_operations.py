@@ -149,4 +149,15 @@ def add_attendee_connection(id1, id2):
     
     #print()
     
-   
+# -------------print("6. View Rooms") ------------------------   
+def view_rooms():
+    cursor = mydb.cursor()
+    
+    cursor.execute("SELECT roomID, roomName FROM room ORDER BY roomID")
+    rooms = cursor.fetchall()
+    
+    print("\nList of Rooms:")
+    print("-" * 20)
+    for room in rooms:
+        print(f"ID: {room[0]} | Name: {room[1]}")
+    cursor.close() 

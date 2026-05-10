@@ -67,7 +67,10 @@ def main():
                 print("*** ERROR *** An attendee cannot connect to him/herself")
             else:
                 db_operations.add_attendee_connection(id1, id2)
-                
+        if choice == '6':
+            db_operations.view_rooms()
+            
+        
         if choice == 'x':
             break
         else:
