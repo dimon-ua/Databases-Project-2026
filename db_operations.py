@@ -17,7 +17,7 @@ def view_speakers_sessions(input_name):
     formatted_search = f"%{input_name}%"
     mycursor.execute(sql, (formatted_search,))
     results = mycursor.fetchall()
-    print(results)
+    #print(results)
     
     print("-"*95)
     
@@ -26,7 +26,9 @@ def view_speakers_sessions(input_name):
     else:
         for row in results: 
             print(f"{row[0]:<35}  |  {row[1]:<35}  |  {row[2]:<35}")       
-            
+    mycursor.close()
+    
+    
 # -------------print("2. View Attendees by Company") ------------------------           
 def attendees_by_company(company_id):
     mycursor = mydb.cursor()
@@ -38,12 +40,17 @@ def attendees_by_company(company_id):
     #print(company[0])    
     #print(type(company[0]))
     
-    
+    # Company doesnt exists
     if company is None:
         print(f"Company with ID {company_id} doesn't exist")
-    else:
-        print(f"\n{company[0]} Attendees")
-        sql = """
+        mycursor.close()
+        return False
+    
+    #Company exists
+    company_name = company[0]    
+    print(f"\n{company_name} Attendees")
+        
+    sql = """
             SELECT 
             attendee.attendeeName, 
             attendee.attendeeDOB, 
@@ -60,30 +67,34 @@ def attendees_by_company(company_id):
             order by attendee.attendeeName;
             """
                     
-        mycursor.execute(sql, (company_id,))
-        results = mycursor.fetchall()                
+    mycursor.execute(sql, (company_id,))
+    results = mycursor.fetchall()                
     
-        if not results:
-            print(f"No attendees found for {company[0]}")  
-        else:                        
-            for row in results:
-                print(f"{row[0]:<15}  |  {row[1]}  |  {row[2]:<35}  |  {row[3]:<25}  |  {row[4]}  |  {row[5]:<25}")  
-            
+    if not results:
+        print(f"No attendees found for {company_name}")  
+    else:                        
+        for row in results:
+            print(f"{row[0]:<15}  |  {row[1]}  |  {row[2]:<35}  |  {row[3]:<25}  |  {row[4]}  |  {row[5]:<25}")  
+    
+    mycursor.close()
+    return True       
 
 # -------------print("3. Add New Attendee") ------------------------    
-def add_new_attendee(attendee_id, name, dob, gender, company_id):            
-    #if error_conditions.attendee_exist(attendee_id):
-    #    print(f"\n[!] *** Error *** Attendee ID: {attendee_id} already exists.")
-    #    return 
+def add_new_attendee(attendee_id, name, dob, gender, company_id):  
+    # First my error checks          
+    if error_conditions.attendee_exist(attendee_id):
+        print(f"\n[!] *** Error *** Attendee ID: {attendee_id} already exists.")
+        return 
     
-    #if not error_conditions.company_exist(company_id):
-    #    print(f"\n[!] *** Error *** Company ID: {company_id} does not exist")
-    #    return
+    if not error_conditions.company_exist(company_id):
+        print(f"\n[!] *** Error *** Company ID: {company_id} does not exist")
+        return
     
-    #if not error_conditions.gender_exist(gender):
-    #    print(f"\n[!] *** Error *** Gender must beMale/Female.")
+    if not error_conditions.gender_exist(gender):
+        print(f"\n[!] *** Error *** Gender must be Male/Female.")
+        return
     
-    
+    # Here MYSQL error checks
     try:    
         mycursor = mydb.cursor()
         

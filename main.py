@@ -22,7 +22,7 @@ def main():
         choice = input("Select an option: ")
         
         if choice == '1':
-            print("\n")
+            #print("\n")
             x = input("Enter speaker name : ")
             print(f"Session Details for : {x}")
             db_operations.view_speakers_sessions(x)
@@ -31,11 +31,11 @@ def main():
             while True:
                 company_id = input("Enter company ID : ")
                 
-                if company_id.isdigit() and int(company_id) > 0:
-                    db_operations.attendees_by_company(company_id)   
-                    break;
-                else:
-                    company_id = input("Enter company ID : ")                 
+                if not company_id.isdigit() or int(company_id) <= 0:
+                    continue
+                
+                if db_operations.attendees_by_company(company_id):   
+                    break;     
         
         if choice == '3':
             print("Add new Attendee\n")
@@ -63,6 +63,10 @@ def main():
                 
                 if not id1.isdigit() or not id2.isdigit():
                     print("*** ERROR *** Attendee IDs must be numbers")
+                    continue
+                
+                if id1 == id2:
+                    print("*** ERROR *** An attendee cannot connect to him/herself\n")
                     continue
                 
                 if db_operations.add_attendee_connection(id1, id2):
