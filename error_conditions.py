@@ -5,7 +5,7 @@ def company_exist(company_id):
     
     query = "SELECT companyID FROM company WHERE companyID = %s"
     
-    mycursor.execute(query, (int(company_id),))
+    mycursor.execute(query, (company_id,))
     result = mycursor.fetchone()
     
     mycursor.close()

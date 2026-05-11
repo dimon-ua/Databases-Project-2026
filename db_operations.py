@@ -71,17 +71,17 @@ def attendees_by_company(company_id):
             
 
 # -------------print("3. Add New Attendee") ------------------------    
-def add_new_attendee(attendee_id, name, dob, gender, company_id):        
-    if error_conditions.attendee_exist(attendee_id):
-        print(f"\n[!] *** Error *** Attendee ID: {attendee_id} already exists.")
-        return 
+def add_new_attendee(attendee_id, name, dob, gender, company_id):            
+    #if error_conditions.attendee_exist(attendee_id):
+    #    print(f"\n[!] *** Error *** Attendee ID: {attendee_id} already exists.")
+    #    return 
     
-    if not error_conditions.company_exist(company_id):
-        print(f"\n[!] *** Error *** Company ID: {company_id} does not exist")
-        return
+    #if not error_conditions.company_exist(company_id):
+    #    print(f"\n[!] *** Error *** Company ID: {company_id} does not exist")
+    #    return
     
-    if not error_conditions.gender_exist(gender):
-        print(f"\n[!] *** Error *** Gender must beMale/Female.")
+    #if not error_conditions.gender_exist(gender):
+    #    print(f"\n[!] *** Error *** Gender must beMale/Female.")
     
     
     try:    
@@ -145,7 +145,22 @@ def add_attendee_connection(id1, id2):
     
     if len(found) < 2:
         print("*** ERROR *** One or both attendee IDs do not exist")
-        return
+        return False
+    
+    with get_session() as session:
+        check = "MATCH (a1:Attendee {attendeeID: $id1})-[r:CONNECTED_TO]-(a2:Attendee {attendeeID: $id2}) RETURN r"
+        if session.run(check, id1=int(id1), id2=int(id2)).single():
+            print("*** ERROR *** These attendees are already connected\n")
+            return False
+        
+        query = """
+            MERGE (a1:Attendee {attendeeID: $id1})
+            MERGE (a2:Attendee {attendeeID: $id2})
+            MERGE (a1)-[:CONNECTED_TO]-(a2)
+            """
+        session.run(query, id1=int(id1), id2=int(id2))
+        print(f"Attendee {id1} is now connected to Attendee {id2}")
+        return True
     
     #print()
     
