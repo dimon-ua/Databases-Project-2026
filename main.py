@@ -59,7 +59,7 @@ def main():
         if choice == '5':
             while True:
                 id1 = input("Enter Attendee 1 ID : ")
-                id2 = input("Enter Attendee 1 ID : ")
+                id2 = input("Enter Attendee 2 ID : ")
                 
                 if not id1.isdigit() or not id2.isdigit():
                     print("*** ERROR *** Attendee IDs must be numbers")

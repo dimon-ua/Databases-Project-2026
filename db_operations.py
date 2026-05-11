@@ -131,8 +131,8 @@ def view_connected_attendees(attendee_id):
     
     with get_session() as neo_session:
         query = """
-        MATCH (a1:Attendee {attendeeID: $id})-[:CONNECTED_TO]-(a2:Attendee)
-        RETURN a2.attendeeID AS id, a2.attendeeName AS name
+        MATCH (a1:Attendee {AttendeeID: $id})-[:CONNECTED_TO]-(a2:Attendee)
+        RETURN a2.AttendeeID AS id
         """
         
         results = neo_session.run(query, id=int(attendee_id))
@@ -143,7 +143,10 @@ def view_connected_attendees(attendee_id):
         else:
             print("These attendees are connected:")
             for record in connections:
-                print(f"{record['id']}  |  {record['name']}")
+                cursor.execute("SELECT attendeeName FROM attendee WHERE attendeeID = %s", (record['id'],))
+                name_row = cursor.fetchone()
+                name = name_row[0] if name_row else "Unknown"
+                print(f"{record['id']}  |  {name}")
     
     cursor.close()
     
@@ -158,18 +161,21 @@ def add_attendee_connection(id1, id2):
         print("*** ERROR *** One or both attendee IDs do not exist")
         return False
     
+    str_id1 = str(id1)
+    str_id2 = str(id2)
+        
     with get_session() as session:
-        check = "MATCH (a1:Attendee {attendeeID: $id1})-[r:CONNECTED_TO]-(a2:Attendee {attendeeID: $id2}) RETURN r"
+        check = "MATCH (a1:Attendee {AttendeeID: $id1})-[r:CONNECTED_TO]-(a2:Attendee {AttendeeID: $id2}) RETURN r"
         if session.run(check, id1=int(id1), id2=int(id2)).single():
             print("*** ERROR *** These attendees are already connected\n")
             return False
         
         query = """
-            MERGE (a1:Attendee {attendeeID: $id1})
-            MERGE (a2:Attendee {attendeeID: $id2})
-            MERGE (a1)-[:CONNECTED_TO]-(a2)
+            MERGE (a1:Attendee {AttendeeID: $id1})
+            MERGE (a2:Attendee {AttendeeID: $id2})
+            CREATE (a1)-[:CONNECTED_TO]->(a2)
             """
-        session.run(query, id1=int(id1), id2=int(id2))
+        session.run(query, id1=str_id1, id2=str_id2)
         print(f"Attendee {id1} is now connected to Attendee {id2}")
         return True
     
@@ -179,11 +185,11 @@ def add_attendee_connection(id1, id2):
 def view_rooms():
     cursor = mydb.cursor()
     
-    cursor.execute("SELECT roomID, roomName FROM room ORDER BY roomID")
+    cursor.execute("SELECT roomID, roomName, capacity FROM room ORDER BY roomID")
     rooms = cursor.fetchall()
     
-    print("\nList of Rooms:")
+    print("\nRoomID  |  RoomName  |  Capacity")
     print("-" * 20)
     for room in rooms:
-        print(f"ID: {room[0]} | Name: {room[1]}")
+        print(f"ID: {room[0]} | Name: {room[1]} | Capacity: {room[2]}")
     cursor.close() 
